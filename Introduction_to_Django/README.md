@@ -1,1 +1,1 @@
-# LibraryProject - ALX Django Intro
+# LibraryProject - ALX Django Introduction
