@@ -5,4 +5,3 @@ urlpatterns = [
     path("books/", list_books, name="books"),
     path("library/<int:pk>/", LibraryDetailView.as_view(), name="library-detail"),
 ]
-
