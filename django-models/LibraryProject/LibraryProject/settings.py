@@ -118,7 +118,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # Authentication settings
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/books/'
-LOGOUT_REDIRECT_URL = '/login/'
-# Allow logout via GET request (for simple link-based logout)
 LOGOUT_REDIRECT_URL = '/login/'

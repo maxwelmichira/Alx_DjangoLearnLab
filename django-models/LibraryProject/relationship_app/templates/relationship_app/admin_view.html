@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin View</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, Admin {{ user.username }}!</p>
+    <p>You have full access to manage the system.</p>
+    <a href="{% url 'list_books' %}">View Books</a> | 
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
