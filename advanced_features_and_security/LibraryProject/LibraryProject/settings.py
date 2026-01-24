@@ -123,3 +123,23 @@ STATIC_URL = 'static/'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/books/'
 LOGOUT_REDIRECT_URL = '/login/'
+# Security Settings
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False  # Set to False in production
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.yourdomain.com']  # Add your domain
+
+# HTTPS Security Settings
+SECURE_BROWSER_XSS_FILTER = True  # Enable browser XSS filtering
+X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking attacks
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+
+# Cookie Security
+CSRF_COOKIE_SECURE = True  # Send CSRF cookie only over HTTPS
+SESSION_COOKIE_SECURE = True  # Send session cookie only over HTTPS
+SECURE_SSL_REDIRECT = True  # Redirect all HTTP to HTTPS
+
+# HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
