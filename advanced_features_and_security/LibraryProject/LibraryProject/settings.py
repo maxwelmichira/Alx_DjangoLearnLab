@@ -123,23 +123,126 @@ STATIC_URL = 'static/'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/books/'
 LOGOUT_REDIRECT_URL = '/login/'
-# Security Settings
+# ============================================================================
+# SECURITY SETTINGS
+# ============================================================================
+# These settings enforce HTTPS and protect against common web vulnerabilities.
+# Reference: https://docs.djangoproject.com/en/stable/topics/security/
+
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = False prevents sensitive error information from being displayed
 DEBUG = False  # Set to False in production
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.yourdomain.com']  # Add your domain
+# ALLOWED_HOSTS prevents Host Header Injection attacks
+# Only requests with these Host headers will be accepted
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.yourdomain.com']
 
-# HTTPS Security Settings
-SECURE_BROWSER_XSS_FILTER = True  # Enable browser XSS filtering
-X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking attacks
-SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+# ============================================================================
+# HTTPS/SSL ENFORCEMENT
+# ============================================================================
 
-# Cookie Security
-CSRF_COOKIE_SECURE = True  # Send CSRF cookie only over HTTPS
-SESSION_COOKIE_SECURE = True  # Send session cookie only over HTTPS
-SECURE_SSL_REDIRECT = True  # Redirect all HTTP to HTTPS
+# SECURE_SSL_REDIRECT: Redirects all HTTP requests to HTTPS
+# Ensures all traffic uses encrypted connections
+SECURE_SSL_REDIRECT = True
 
+# ============================================================================
 # HSTS (HTTP Strict Transport Security)
-SECURE_HSTS_SECONDS = 31536000  # 1 year
+# ============================================================================
+# HSTS tells browsers to only access the site via HTTPS
+# This prevents protocol downgrade attacks and cookie hijacking
+
+# SECURE_HSTS_SECONDS: How long browsers should remember to use HTTPS
+# 31536000 seconds = 1 year (recommended minimum)
+SECURE_HSTS_SECONDS = 31536000
+
+# SECURE_HSTS_INCLUDE_SUBDOMAINS: Apply HSTS to all subdomains
+# Set to True if all subdomains also use HTTPS
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# SECURE_HSTS_PRELOAD: Allow site to be included in browser HSTS preload lists
+# Submit to: https://hstspreload.org/
 SECURE_HSTS_PRELOAD = True
+
+# ============================================================================
+# SECURE COOKIE SETTINGS
+# ============================================================================
+# These settings ensure cookies are only sent over HTTPS connections
+
+# SESSION_COOKIE_SECURE: Session cookies only sent over HTTPS
+# Prevents session hijacking over insecure connections
+SESSION_COOKIE_SECURE = True
+
+# CSRF_COOKIE_SECURE: CSRF tokens only sent over HTTPS
+# Protects CSRF tokens from being intercepted
+CSRF_COOKIE_SECURE = True
+
+# Additional cookie security (recommended)
+SESSION_COOKIE_HTTPONLY = True  # Prevents JavaScript access to session cookie
+CSRF_COOKIE_HTTPONLY = True  # Prevents JavaScript access to CSRF cookie
+SESSION_COOKIE_SAMESITE = 'Strict'  # Prevents CSRF attacks
+CSRF_COOKIE_SAMESITE = 'Strict'  # Prevents CSRF attacks
+
+# ============================================================================
+# SECURITY HEADERS
+# ============================================================================
+# Additional HTTP headers to protect against various attacks
+
+# X_FRAME_OPTIONS: Prevents clickjacking by disallowing framing
+# Options: 'DENY' (no framing) or 'SAMEORIGIN' (same-origin framing only)
+X_FRAME_OPTIONS = 'DENY'
+
+# SECURE_CONTENT_TYPE_NOSNIFF: Prevents MIME-sniffing attacks
+# Forces browsers to respect declared content types
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# SECURE_BROWSER_XSS_FILTER: Enables browser's XSS filtering
+# Provides additional XSS attack protection
+SECURE_BROWSER_XSS_FILTER = True
+
+# ============================================================================
+# DEPLOYMENT CHECKLIST
+# ============================================================================
+# Before deploying to production, ensure:
+# 1. SSL/TLS certificate is installed and valid
+# 2. Web server (Nginx/Apache) is configured for HTTPS
+# 3. All ALLOWED_HOSTS are updated with actual domain names
+# 4. SECRET_KEY is stored in environment variable
+# 5. Database credentials are secured
+# 6. Static files are served securely
+# 7. Run: python manage.py check --deploy
+
+
+# Additional cookie security (recommended)
+SESSION_COOKIE_HTTPONLY = True  # Prevents JavaScript access to session cookie
+CSRF_COOKIE_HTTPONLY = True  # Prevents JavaScript access to CSRF cookie
+SESSION_COOKIE_SAMESITE = 'Strict'  # Prevents CSRF attacks
+CSRF_COOKIE_SAMESITE = 'Strict'  # Prevents CSRF attacks
+
+# ============================================================================
+# SECURITY HEADERS
+# ============================================================================
+# Additional HTTP headers to protect against various attacks
+
+# X_FRAME_OPTIONS: Prevents clickjacking by disallowing framing
+# Options: 'DENY' (no framing) or 'SAMEORIGIN' (same-origin framing only)
+X_FRAME_OPTIONS = 'DENY'
+
+# SECURE_CONTENT_TYPE_NOSNIFF: Prevents MIME-sniffing attacks
+# Forces browsers to respect declared content types
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# SECURE_BROWSER_XSS_FILTER: Enables browser's XSS filtering
+# Provides additional XSS attack protection
+SECURE_BROWSER_XSS_FILTER = True
+
+# ============================================================================
+# DEPLOYMENT CHECKLIST
+# ============================================================================
+# Before deploying to production, ensure:
+# 1. SSL/TLS certificate is installed and valid
+# 2. Web server (Nginx/Apache) is configured for HTTPS
+# 3. All ALLOWED_HOSTS are updated with actual domain names
+# 4. SECRET_KEY is stored in environment variable
+# 5. Database credentials are secured
+# 6. Static files are served securely
+# 7. Run: python manage.py check --deploy
