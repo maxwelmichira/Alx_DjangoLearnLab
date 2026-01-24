@@ -144,7 +144,9 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.yourdomain.com']
 # SECURE_SSL_REDIRECT: Redirects all HTTP requests to HTTPS
 # Ensures all traffic uses encrypted connections
 SECURE_SSL_REDIRECT = True
-
+# SECURE_PROXY_SSL_HEADER: Trust X-Forwarded-Proto header from proxy
+# Required when Django is behind a reverse proxy (Nginx, Apache, load balancer)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # ============================================================================
 # HSTS (HTTP Strict Transport Security)
 # ============================================================================
