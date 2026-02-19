@@ -144,3 +144,171 @@ serializer.errors  # {'publication_year': ['Publication year cannot be in the fu
 ## Author
 
 Max - ALX Django Advanced API Project
+## API Endpoints
+
+### Public Endpoints (No Authentication Required)
+
+#### List All Books
+- **URL:** `GET /api/books/`
+- **Description:** Retrieve a list of all books
+- **Permissions:** Public (read-only)
+- **Response:** 200 OK with array of books
+```bash
+curl http://127.0.0.1:8000/api/books/
+```
+
+#### Get Book Details
+- **URL:** `GET /api/books/<int:pk>/`
+- **Description:** Retrieve details of a specific book
+- **Permissions:** Public (read-only)
+- **Response:** 200 OK with book data
+```bash
+curl http://127.0.0.1:8000/api/books/1/
+```
+
+### Protected Endpoints (Authentication Required)
+
+#### Create a Book
+- **URL:** `POST /api/books/create/`
+- **Description:** Create a new book
+- **Permissions:** Authenticated users only
+- **Authentication:** Basic or Session authentication required
+- **Response:** 201 Created with new book data
+```bash
+curl -X POST http://127.0.0.1:8000/api/books/create/ \
+  -u username:password \
+  -H "Content-Type: application/json" \
+  -d '{"title":"New Book","publication_year":2020,"author":1}'
+```
+
+**Validation:**
+- `publication_year` cannot be in the future
+- Returns 400 Bad Request with error message if validation fails
+
+#### Update a Book
+- **URL:** `PUT /api/books/<int:pk>/update/` (full update)
+- **URL:** `PATCH /api/books/<int:pk>/update/` (partial update)
+- **Description:** Update an existing book
+- **Permissions:** Authenticated users only
+- **Response:** 200 OK with updated book data
+```bash
+# Full update (PUT)
+curl -X PUT http://127.0.0.1:8000/api/books/1/update/ \
+  -u username:password \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Title","publication_year":2021,"author":1}'
+
+# Partial update (PATCH)
+curl -X PATCH http://127.0.0.1:8000/api/books/1/update/ \
+  -u username:password \
+  -H "Content-Type: application/json" \
+  -d '{"publication_year":2022}'
+```
+
+#### Delete a Book
+- **URL:** `DELETE /api/books/<int:pk>/delete/`
+- **Description:** Delete a book
+- **Permissions:** Authenticated users only
+- **Response:** 204 No Content on success
+```bash
+curl -X DELETE http://127.0.0.1:8000/api/books/1/delete/ \
+  -u username:password
+```
+
+## View Configurations
+
+### Generic Views Used
+
+All views leverage Django REST Framework's generic views for efficient CRUD operations:
+
+1. **BookListView** - `generics.ListAPIView`
+   - Provides GET method for listing all books
+   - Read-only access for all users
+
+2. **BookDetailView** - `generics.RetrieveAPIView`
+   - Provides GET method for single book retrieval
+   - Read-only access for all users
+
+3. **BookCreateView** - `generics.CreateAPIView`
+   - Provides POST method for creating books
+   - Restricted to authenticated users
+   - Automatic validation via BookSerializer
+
+4. **BookUpdateView** - `generics.UpdateAPIView`
+   - Provides PUT and PATCH methods for updating books
+   - Restricted to authenticated users
+   - Full and partial updates supported
+
+5. **BookDeleteView** - `generics.DestroyAPIView`
+   - Provides DELETE method for removing books
+   - Restricted to authenticated users
+
+### Permission Classes
+
+- **IsAuthenticatedOrReadOnly**: Used for ListView and DetailView
+  - Allows GET requests from anyone
+  - Requires authentication for write operations
+
+- **IsAuthenticated**: Used for CreateView, UpdateView, DeleteView
+  - All operations require authentication
+  - Unauthenticated requests receive 401 Unauthorized
+
+### Authentication Methods
+
+The API supports two authentication methods:
+1. **Basic Authentication**: Username and password in request headers
+2. **Session Authentication**: Django session-based authentication (browser)
+
+Configuration in `settings.py`:
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+```
+
+## Testing Examples
+
+### Test Read Access (No Auth)
+```bash
+# Should succeed
+curl http://127.0.0.1:8000/api/books/
+curl http://127.0.0.1:8000/api/books/1/
+```
+
+### Test Write Access Without Auth
+```bash
+# Should fail with 401
+curl -X POST http://127.0.0.1:8000/api/books/create/ \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test","publication_year":2020,"author":1}'
+```
+
+### Test Custom Validation
+```bash
+# Should fail with validation error (future year)
+curl -X POST http://127.0.0.1:8000/api/books/create/ \
+  -u admin:password \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Future Book","publication_year":2027,"author":1}'
+```
+
+### Test Authenticated Access
+```bash
+# Should succeed
+curl -X POST http://127.0.0.1:8000/api/books/create/ \
+  -u admin:password \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Authenticated Book","publication_year":2020,"author":1}'
+```
+
+## URL Pattern Structure
+```
+/api/books/                     - List all books (GET)
+/api/books/<int:pk>/            - Get book details (GET)
+/api/books/create/              - Create book (POST) - Auth required
+/api/books/<int:pk>/update/     - Update book (PUT/PATCH) - Auth required
+/api/books/<int:pk>/delete/     - Delete book (DELETE) - Auth required
+```
