@@ -2,6 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
+# This module uses serializers.CharField() for password fields
+# and get_user_model().objects.create_user for user creation
+
 User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
