@@ -143,7 +143,98 @@ serializer.errors  # {'publication_year': ['Publication year cannot be in the fu
 
 ## Author
 
+
 Max - ALX Django Advanced API Project
+## Advanced Query Features
+
+### Filtering
+
+Filter books by specific field values:
+
+**Filter by Title:**
+```bash
+curl "http://127.0.0.1:8000/api/books/?title=Harry%20Potter"
+```
+
+**Filter by Author Name:**
+```bash
+curl "http://127.0.0.1:8000/api/books/?author__name=Rowling"
+```
+
+**Filter by Publication Year:**
+```bash
+curl "http://127.0.0.1:8000/api/books/?publication_year=1997"
+```
+
+**Multiple Filters:**
+```bash
+curl "http://127.0.0.1:8000/api/books/?author__name=Rowling&publication_year=1997"
+```
+
+### Searching
+
+Search across title and author name fields:
+
+**Search for books:**
+```bash
+curl "http://127.0.0.1:8000/api/books/?search=Harry"
+curl "http://127.0.0.1:8000/api/books/?search=Rowling"
+```
+
+The search performs case-insensitive matching across both title and author name fields.
+
+### Ordering
+
+Sort results by title or publication year:
+
+**Order by Title (Ascending):**
+```bash
+curl "http://127.0.0.1:8000/api/books/?ordering=title"
+```
+
+**Order by Title (Descending):**
+```bash
+curl "http://127.0.0.1:8000/api/books/?ordering=-title"
+```
+
+**Order by Publication Year (Ascending):**
+```bash
+curl "http://127.0.0.1:8000/api/books/?ordering=publication_year"
+```
+
+**Order by Publication Year (Descending):**
+```bash
+curl "http://127.0.0.1:8000/api/books/?ordering=-publication_year"
+```
+
+### Combined Queries
+
+You can combine filtering, searching, and ordering in a single request:
+```bash
+# Search for "Harry", filter by author, and sort by year
+curl "http://127.0.0.1:8000/api/books/?search=Harry&author__name=Rowling&ordering=publication_year"
+
+# Filter by year and sort by title descending
+curl "http://127.0.0.1:8000/api/books/?publication_year=1997&ordering=-title"
+```
+
+### Implementation Details
+
+**Filter Backend Configuration:**
+- `DjangoFilterBackend`: Enables field-specific filtering
+- `SearchFilter`: Enables text search across specified fields
+- `OrderingFilter`: Enables result sorting
+
+**BookListView Configuration:**
+```python
+filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+filterset_fields = ['title', 'author__name', 'publication_year']
+search_fields = ['title', 'author__name']
+ordering_fields = ['title', 'publication_year']
+ordering = ['title']  # Default ordering
+```
+
+
 ## API Endpoints
 
 ### Public Endpoints (No Authentication Required)
