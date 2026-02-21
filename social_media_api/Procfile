@@ -1,1 +1,1 @@
-web: gunicorn social_media_api.wsgi --log-file -
+web: DJANGO_SETTINGS_MODULE=social_media_api.settings_production gunicorn social_media_api.wsgi --log-file -
