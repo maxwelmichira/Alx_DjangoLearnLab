@@ -1,9 +1,13 @@
-from rest_framework import viewsets, filters, generics, permissions
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import viewsets, filters, generics, permissions, status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Post, Comment
+from django.contrib.contenttypes.models import ContentType
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, PostListSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
+from notifications.models import Notification
 
 
 class FeedView(generics.ListAPIView):
@@ -46,21 +50,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from .models import Like
-from notifications.models import Notification
-from django.contrib.contenttypes.models import ContentType
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if Like.objects.filter(user=request.user, post=post).exists():
+    post = generics.get_object_or_404(Post, pk=pk)
+    like, created = Like.objects.get_or_create(user=request.user, post=post)
+    if not created:
         return Response({'error': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
-    Like.objects.create(user=request.user, post=post)
     Notification.objects.create(
         recipient=post.author,
         actor=request.user,
@@ -74,7 +70,7 @@ def like_post(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unlike_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)
     like = Like.objects.filter(user=request.user, post=post).first()
     if not like:
         return Response({'error': 'You have not liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
