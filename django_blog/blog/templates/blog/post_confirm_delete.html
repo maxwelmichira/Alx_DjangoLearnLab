@@ -1,0 +1,18 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Delete Post - Django Blog{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <h2>Delete Post</h2>
+    <p>Are you sure you want to delete <strong>"{{ post.title }}"</strong>?</p>
+    <p>This action cannot be undone.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="post-actions">
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'post-list' %}" class="btn">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

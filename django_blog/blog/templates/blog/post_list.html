@@ -1,0 +1,36 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}All Posts - Django Blog{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h2>All Posts</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'post-create' %}" class="btn">+ New Post</a>
+    {% endif %}
+</section>
+
+<section class="posts-list">
+    {% if posts %}
+        {% for post in posts %}
+        <article class="post-card">
+            <h2><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h2>
+            <div class="post-meta">
+                <span>By <strong>{{ post.author.username }}</strong></span>
+                <span>{{ post.published_date|date:"F j, Y" }}</span>
+            </div>
+            <p>{{ post.content|truncatewords:30 }}</p>
+            <div class="post-actions">
+                <a href="{% url 'post-detail' post.pk %}" class="btn">Read More</a>
+                {% if user == post.author %}
+                    <a href="{% url 'post-edit' post.pk %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'post-delete' post.pk %}" class="btn btn-danger">Delete</a>
+                {% endif %}
+            </div>
+        </article>
+        {% endfor %}
+    {% else %}
+        <p class="no-posts">No posts yet. Be the first to write one!</p>
+    {% endif %}
+</section>
+{% endblock %}

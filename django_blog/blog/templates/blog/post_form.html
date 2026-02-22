@@ -1,0 +1,31 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}
+    {% if object %}Edit Post{% else %}New Post{% endif %} - Django Blog
+{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <h2>{% if object %}Edit Post{% else %}Create New Post{% endif %}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div class="post-actions">
+            <button type="submit" class="btn">
+                {% if object %}Update Post{% else %}Create Post{% endif %}
+            </button>
+            <a href="{% url 'post-list' %}" class="btn btn-danger">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
