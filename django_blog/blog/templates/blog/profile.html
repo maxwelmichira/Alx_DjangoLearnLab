@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Profile - Django Blog{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <h2>My Profile</h2>
+    <p class="profile-info">Logged in as <strong>{{ user.username }}</strong></p>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <span class="form-error">{{ error }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn">Update Profile</button>
+    </form>
+</section>
+{% endblock %}
