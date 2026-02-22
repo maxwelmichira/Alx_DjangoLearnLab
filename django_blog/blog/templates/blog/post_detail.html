@@ -20,4 +20,52 @@
         {% endif %}
     </div>
 </article>
+
+<!-- COMMENTS SECTION -->
+<section class="comments-section">
+    <h3>Comments ({{ comments.count }})</h3>
+
+    {% if comments %}
+        {% for comment in comments %}
+        <div class="comment-card">
+            <div class="comment-meta">
+                <strong>{{ comment.author.username }}</strong>
+                <span>{{ comment.created_at|date:"F j, Y" }}</span>
+            </div>
+            <p>{{ comment.content }}</p>
+            {% if user == comment.author %}
+            <div class="comment-actions">
+                <a href="{% url 'comment-edit' comment.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'comment-delete' comment.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-comments">No comments yet. Be the first to comment!</p>
+    {% endif %}
+
+    <!-- ADD COMMENT FORM -->
+    {% if user.is_authenticated %}
+    <div class="comment-form-section">
+        <h4>Leave a Comment</h4>
+        <form method="POST" action="{% url 'comment-create' post.pk %}">
+            {% csrf_token %}
+            {% for field in comment_form %}
+            <div class="form-group">
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <span class="form-error">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn">Post Comment</button>
+        </form>
+    </div>
+    {% else %}
+    <p class="auth-link"><a href="{% url 'login' %}">Login</a> to leave a comment.</p>
+    {% endif %}
+</section>
 {% endblock %}
