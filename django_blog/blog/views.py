@@ -9,13 +9,11 @@ from .models import Post, Comment
 from .forms import RegisterForm, ProfileUpdateForm, PostForm, CommentForm
 
 
-# ===== HOME =====
 def index(request):
     posts = Post.objects.all()
     return render(request, 'blog/index.html', {'posts': posts})
 
 
-# ===== AUTH =====
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -62,7 +60,6 @@ def profile(request):
     return render(request, 'blog/profile.html', {'form': form})
 
 
-# ===== CRUD =====
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -123,47 +120,50 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-# ===== COMMENTS =====
-@login_required
-def comment_create(request, post_id):
-    post = get_object_or_404(Post, pk=post_id)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            messages.success(request, 'Comment added successfully!')
-    return redirect('post-detail', pk=post_id)
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs['post_id'])
+        form.instance.author = self.request.user
+        form.instance.post = post
+        messages.success(self.request, 'Comment added successfully!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.kwargs['post_id']})
 
 
-@login_required
-def comment_edit(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    if request.user != comment.author:
-        messages.error(request, 'You are not allowed to edit this comment.')
-        return redirect('post-detail', pk=comment.post.pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST, instance=comment)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Comment updated successfully!')
-            return redirect('post-detail', pk=comment.post.pk)
-    else:
-        form = CommentForm(instance=comment)
-    return render(request, 'blog/comment_form.html', {'form': form, 'comment': comment})
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Comment updated successfully!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
 
 
-@login_required
-def comment_delete(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    if request.user != comment.author:
-        messages.error(request, 'You are not allowed to delete this comment.')
-        return redirect('post-detail', pk=comment.post.pk)
-    if request.method == 'POST':
-        post_id = comment.post.pk
-        comment.delete()
-        messages.success(request, 'Comment deleted successfully!')
-        return redirect('post-detail', pk=post_id)
-    return render(request, 'blog/comment_confirm_delete.html', {'comment': comment})
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Comment deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('post-detail', kwargs={'pk': self.object.post.pk})
