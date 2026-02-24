@@ -9,6 +9,11 @@
         <span>By <strong>{{ post.author.username }}</strong></span>
         <span>{{ post.published_date|date:"F j, Y" }}</span>
     </div>
+    <div class="post-tags">
+        {% for tag in post.tags.all %}
+            <a href="{% url 'posts-by-tag' tag.name %}" class="tag">{{ tag.name }}</a>
+        {% endfor %}
+    </div>
     <div class="post-content">
         {{ post.content }}
     </div>

@@ -380,3 +380,50 @@ footer {
     color: #555;
     font-style: italic;
 }
+/* ===== TAGS ===== */
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+}
+
+.tag {
+    display: inline-block;
+    background: #eaf4fb;
+    color: #3498db;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #3498db;
+    transition: background 0.2s, color 0.2s;
+}
+
+.tag:hover {
+    background: #3498db;
+    color: #fff;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+    margin-bottom: 2rem;
+}
+
+.search-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-input-group input {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.search-input-group input:focus {
+    border-color: #3498db;
+    outline: none;
+}

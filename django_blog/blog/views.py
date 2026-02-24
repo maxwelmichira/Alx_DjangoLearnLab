@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
+from django.db.models import Q
 from .models import Post, Comment
 from .forms import RegisterForm, ProfileUpdateForm, PostForm, CommentForm
 
@@ -118,6 +119,23 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Post deleted successfully!')
         return super().delete(request, *args, **kwargs)
+
+
+def search_posts(request):
+    query = request.GET.get('q', '')
+    results = []
+    if query:
+        results = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    return render(request, 'blog/search_results.html', {'results': results, 'query': query})
+
+
+def posts_by_tag(request, tag_name):
+    posts = Post.objects.filter(tags__name__in=[tag_name]).distinct()
+    return render(request, 'blog/posts_by_tag.html', {'posts': posts, 'tag_name': tag_name})
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
