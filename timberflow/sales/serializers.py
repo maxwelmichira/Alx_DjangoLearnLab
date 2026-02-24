@@ -1,5 +1,19 @@
 from rest_framework import serializers
-from .models import Customer, Sale, SaleItem
+from .models import Customer, Sale, SaleItem, Payment
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = [
+            'id', 'sale', 'amount', 'payment_method', 'payment_method_display',
+            'payment_date', 'reference', 'notes',
+            'created_by', 'created_by_username', 'created_at'
+        ]
+        read_only_fields = ['id', 'sale', 'created_by', 'created_at']
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
@@ -17,6 +31,7 @@ class SaleItemSerializer(serializers.ModelSerializer):
 
 class SaleSerializer(serializers.ModelSerializer):
     items = SaleItemSerializer(many=True, read_only=True)
+    payments = PaymentSerializer(many=True, read_only=True)
     customer_name = serializers.CharField(source='customer.name', read_only=True)
     created_by_username = serializers.CharField(source='created_by.username', read_only=True)
     payment_method_display = serializers.CharField(source='get_payment_method_display', read_only=True)
@@ -29,8 +44,8 @@ class SaleSerializer(serializers.ModelSerializer):
             'id', 'customer', 'customer_name', 'sale_date', 'invoice_number',
             'payment_method', 'payment_method_display', 'payment_status',
             'payment_status_display', 'total_amount', 'amount_paid', 'balance',
-            'notes', 'created_by', 'created_by_username', 'items',
-            'created_at', 'updated_at'
+            'notes', 'created_by', 'created_by_username',
+            'items', 'payments', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
