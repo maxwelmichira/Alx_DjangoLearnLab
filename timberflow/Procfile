@@ -1,0 +1,1 @@
+web: DJANGO_SETTINGS_MODULE=timberflow.settings_production gunicorn timberflow.wsgi --log-file -
