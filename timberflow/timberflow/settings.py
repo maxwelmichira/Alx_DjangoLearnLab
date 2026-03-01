@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
      # Third-party apps
     'rest_framework',
+    'drf_spectacular',
     'rest_framework.authtoken',
     'django_filters',
     
@@ -148,3 +149,15 @@ REST_FRAMEWORK = {
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+# Swagger/OpenAPI Configuration
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'TimberFlow API',
+    'DESCRIPTION': 'API for managing timber processing, inventory, sales and finances',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+}
+
+REST_FRAMEWORK['DEFAULT_SCHEMA_CLASS'] = 'drf_spectacular.openapi.AutoSchema'
