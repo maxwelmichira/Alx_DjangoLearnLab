@@ -4,13 +4,13 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS', '*')]
+ALLOWED_HOSTS = ['*']
 
 # Security settings
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True') == 'True'
+SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
